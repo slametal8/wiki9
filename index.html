@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WikiExplorer - Artikel Lengkap Wikipedia</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #1f2937;
+            --light: #f8fafc;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--gradient);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hero {
+            background: var(--gradient);
+            color: white;
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .search-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-top: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            background: white;
+        }
+
+        .search-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* Article Styles - Mirip Wikipedia */
+        .article-header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .article-description {
+            color: #666;
+            font-size: 1.1rem;
+            font-style: italic;
+        }
+
+        .article-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Wikipedia-like Content */
+        .article-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .article-content p {
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        .article-content h2 {
+            color: var(--primary);
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .article-content h3 {
+            color: var(--dark);
+            margin: 1.5rem 0 1rem 0;
+        }
+
+        .infobox {
+            background: #f8f9fa;
+            border: 1px solid #a2a9b1;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            float: right;
+            width: 300px;
+            margin-left: 1rem;
+        }
+
+        .infobox-title {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem;
+            margin: -1rem -1rem 1rem -1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .toc {
+            background: #f8f9fa;
+            border: 1px solid #a2a9b1;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+        }
+
+        .toc-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .trending-list {
+            list-style: none;
+        }
+
+        .trending-list li {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .trending-list li:hover {
+            background: var(--light);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .share-btn { background: var(--primary); color: white; }
+        .save-btn { background: var(--secondary); color: white; }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .stats-grid, .article-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .infobox {
+                float: none;
+                width: 100%;
+                margin: 1rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <i class="fas fa-wikipedia-w"></i>
+                <span>WikiExplorer Full</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Baca Artikel Lengkap Wikipedia</h1>
+        <p>Konten FULL langsung dari Wikipedia - Semua section dan detail</p>
+        
+        <div class="search-container">
+            <div class="search-form">
+                <input type="text" class="search-input" id="searchInput" 
+                       placeholder="Cari artikel lengkap Wikipedia...">
+                <button class="search-btn" onclick="searchArticle()">
+                    <i class="fas fa-search"></i> Cari Artikel Lengkap
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <main>
+            <!-- Articles Section -->
+            <section class="card">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">1391</div>
+                        <div>Artikel</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">108</div>
+                        <div>Gambar</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">12</div>
+                        <div>Kategori</div>
+                    </div>
+                </div>
+                
+                <div id="articleContent">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Memuat artikel lengkap dari Wikipedia...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <section class="card">
+                <h3><i class="fas fa-fire"></i> Pencarian Populer</h3>
+                <ul class="trending-list">
+                    <li onclick="loadFullArticle('Kecerdasan buatan')">🤖 Kecerdasan Buatan</li>
+                    <li onclick="loadFullArticle('Indonesia')">🇮🇩 Indonesia</li>
+                    <li onclick="loadFullArticle('Ekonomi')">💰 Ekonomi</li>
+                    <li onclick="loadFullArticle('Sejarah')">📜 Sejarah Indonesia</li>
+                    <li onclick="loadFullArticle('Teknologi')">💻 Teknologi</li>
+                </ul>
+            </section>
+        </aside>
+    </div>
+
+    <script>
+        // Load Full Wikipedia Article dengan semua konten
+        async function loadFullArticle(keyword) {
+            document.getElementById('searchInput').value = keyword;
+            
+            document.getElementById('articleContent').innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Mengambil artikel LENGKAP "${keyword}" dari Wikipedia...</p>
+                    <p style="font-size: 0.9rem; margin-top: 1rem;">Ini mungkin butuh beberapa detik</p>
+                </div>
+            `;
+
+            try {
+                // Gunakan Wikipedia API untuk konten lengkap
+                const articleData = await fetchCompleteWikipediaArticle(keyword);
+                displayCompleteArticle(articleData);
+                
+            } catch (error) {
+                document.getElementById('articleContent').innerHTML = `
+                    <div class="loading">
+                        <p>❌ Gagal memuat artikel lengkap.</p>
+                        <p>Error: ${error.message}</p>
+                        <button onclick="loadFullArticle('${keyword}')" 
+                                style="background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; margin-top: 1rem; cursor: pointer;">
+                            Coba Lagi
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Fetch COMPLETE Wikipedia Article dengan semua section
+        async function fetchCompleteWikipediaArticle(keyword) {
+            try {
+                console.log('Mengambil artikel lengkap untuk:', keyword);
+                
+                // 1. Ambil data dasar dulu
+                const summaryResponse = await fetch(
+                    `https://id.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(keyword)}`
+                );
+                
+                if (!summaryResponse.ok) {
+                    throw new Error('Artikel tidak ditemukan di Wikipedia Indonesia');
+                }
+                
+                const summaryData = await summaryResponse.json();
+                
+                // 2. Ambil konten MOBILE yang lebih lengkap
+                let fullContent = '';
+                try {
+                    const mobileResponse = await fetch(
+                        `https://id.wikipedia.org/api/rest_v1/page/mobile-sections/${encodeURIComponent(keyword)}`
+                    );
+                    
+                    if (mobileResponse.ok) {
+                        const mobileData = await mobileResponse.json();
+                        fullContent = extractContentFromMobileSections(mobileData);
+                    }
+                } catch (mobileError) {
+                    console.log('Mobile API gagal, gunakan summary extended');
+                }
+                
+                // 3. Jika mobile content kosong, coba ambil dengan method lain
+                if (!fullContent) {
+                    fullContent = await fetchExtendedContent(keyword);
+                }
+                
+                return {
+                    title: summaryData.title,
+                    description: summaryData.description,
+                    image: summaryData.thumbnail?.source,
+                    content: fullContent || summaryData.extract,
+                    url: summaryData.content_urls?.desktop?.page
+                };
+                
+            } catch (error) {
+                console.error('Error:', error);
+                throw error;
+            }
+        }
+
+        // Extract content dari mobile sections
+        function extractContentFromMobileSections(mobileData) {
+            let content = '';
+            
+            // Ambil dari lead sections
+            if (mobileData.lead && mobileData.lead.sections) {
+                mobileData.lead.sections.forEach(section => {
+                    if (section.text) {
+                        content += section.text + '\n\n';
+                    }
+                });
+            }
+            
+            // Ambil dari remaining sections
+            if (mobileData.remaining && mobileData.remaining.sections) {
+                mobileData.remaining.sections.forEach(section => {
+                    if (section.text && section.line && section.line !== 'Referensi') {
+                        content += `## ${section.line}\n\n${section.text}\n\n`;
+                    }
+                });
+            }
+            
+            return content.replace(/<[^>]*>/g, '') // Hapus HTML tags
+                        .replace(/\[\d+\]/g, '')   // Hapus citation numbers
+                        .substring(0, 15000);      // Batasi panjang
+        }
+
+        // Fallback method untuk konten extended
+        async function fetchExtendedContent(keyword) {
+            try {
+                // Coba ambil dari Wikipedia HTML dan parse
+                const htmlResponse = await fetch(
+                    `https://id.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(keyword)}&prop=text&format=json&origin=*`
+                );
+                
+                if (htmlResponse.ok) {
+                    const htmlData = await htmlResponse.json();
+                    if (htmlData.parse && htmlData.parse.text && htmlData.parse.text['*']) {
+                        const htmlContent = htmlData.parse.text['*'];
+                        // Extract text dari HTML (sederhana)
+                        return htmlContent.replace(/<[^>]*>/g, ' ')
+                                         .replace(/\s+/g, ' ')
+                                         .substring(0, 10000);
+                    }
+                }
+            } catch (e) {
+                console.log('Extended content failed');
+            }
+            
+            return '';
+        }
+
+        // Display Complete Article dengan format Wikipedia-like
+        function displayCompleteArticle(article) {
+            const content = article.content || 'Konten tidak tersedia untuk artikel ini.';
+            const wordCount = content.split(/\s+/).length;
+            const paragraphCount = (content.match(/\n\n/g) || []).length + 1;
+            const sentenceCount = (content.match(/[.!?]+/g) || []).length;
+            const readTime = Math.max(1, Math.ceil(wordCount / 200));
+
+            // Format konten dengan section headers
+            const formattedContent = formatWikipediaContent(content);
+
+            document.getElementById('articleContent').innerHTML = `
+                <div class="article-header">
+                    <h1 class="article-title">${article.title}</h1>
+                    ${article.description ? `
+                    <div class="article-description">
+                        ${article.description}
+                    </div>
+                    ` : ''}
+                </div>
+
+                ${article.image ? `
+                <div class="infobox">
+                    <div class="infobox-title">${article.title}</div>
+                    <img src="${article.image}" alt="${article.title}" style="width: 100%; border-radius: 0.25rem; margin-bottom: 1rem;">
+                    <div style="font-size: 0.9rem; color: #666;">
+                        Gambar terkait ${article.title}
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="article-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">${wordCount}</div>
+                        <div class="stat-label">Kata</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${paragraphCount}</div>
+                        <div class="stat-label">Paragraf</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${sentenceCount}</div>
+                        <div class="stat-label">Kalimat</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">${readTime}</div>
+                        <div class="stat-label">Menit Baca</div>
+                    </div>
+                </div>
+
+                <div class="article-content">
+                    ${formattedContent}
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn share-btn" onclick="shareArticle('${article.title}')">
+                        <i class="fas fa-share"></i> Bagikan Artikel
+                    </button>
+                    <button class="action-btn save-btn" onclick="saveArticle('${article.title}')">
+                        <i class="fas fa-bookmark"></i> Simpan
+                    </button>
+                </div>
+
+                ${article.url ? `
+                <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--light); border-radius: 1rem;">
+                    <p style="margin-bottom: 1rem; font-size: 1.1rem;">📚 Ingin baca versi yang lebih lengkap dengan gambar dan referensi?</p>
+                    <a href="${article.url}" target="_blank" 
+                       style="background: var(--primary); color: white; padding: 1rem 2rem; border-radius: 0.75rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-external-link-alt"></i>
+                        Buka Halaman Lengkap di Wikipedia
+                    </a>
+                </div>
+                ` : ''}
+            `;
+        }
+
+        // Format Wikipedia-like content dengan headers
+        function formatWikipediaContent(content) {
+            // Split by double newlines untuk paragraphs
+            const paragraphs = content.split('\n\n').filter(p => p.trim().length > 10);
+            
+            let formatted = '';
+            let inSection = false;
+            
+            paragraphs.forEach(paragraph => {
+                // Check jika paragraph adalah section header
+                if (paragraph.startsWith('## ')) {
+                    if (inSection) {
+                        formatted += '</div>';
+                    }
+                    const sectionTitle = paragraph.replace('## ', '');
+                    formatted += `
+                        <h2>${sectionTitle}</h2>
+                        <div style="margin-left: 1rem;">
+                    `;
+                    inSection = true;
+                } else {
+                    formatted += `<p>${paragraph}</p>`;
+                }
+            });
+            
+            if (inSection) {
+                formatted += '</div>';
+            }
+            
+            return formatted || paragraphs.map(p => `<p>${p}</p>`).join('');
+        }
+
+        // Search Functionality
+        function searchArticle() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                loadFullArticle(query);
+            }
+        }
+
+        // Share Article
+        function shareArticle(title) {
+            const url = `https://id.wikipedia.org/wiki/${encodeURIComponent(title)}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: `${title} - Wikipedia`,
+                    text: `Baca artikel lengkap tentang ${title}`,
+                    url: url
+                });
+            } else {
+                alert(`Bagikan: ${title}\n${url}`);
+            }
+        }
+
+        // Save Article
+        function saveArticle(title) {
+            alert(`✅ "${title}" telah disimpan ke koleksi Anda!`);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFullArticle('Kecerdasan buatan');
+            
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchArticle();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
